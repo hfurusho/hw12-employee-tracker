@@ -1,25 +1,24 @@
-const actionQ = [
-  {
-    type: "list",
-    name: "action",
-    message: "What would you like to do?",
-    choices: ["View", "Add", "Update"]
-  },
-  {
-    type: "list",
-    name: "catagory",
-    message: "Please select a catagory.",
-    choices: ["Department(s)", "Role(s)", "Employee(s)"]
-  }
-];
+const action = {
+  type: "list",
+  name: "action",
+  message: "What would you like to do?",
+  choices: ["View", "Add", "Update Employee Info."]
+};
 
-const addDepQ = {
+const viewAddCatagories = {
+  type: "list",
+  name: "catagory",
+  message: "Please select a catagory.",
+  choices: ["Department(s)", "Role(s)", "Employee(s)"]
+};
+
+const addDep = {
   type: "input",
   name: "name",
   message: "What is the name of the department?"
 };
 
-const addRoleQ = [
+const addRole = [
   {
     type: "input",
     name: "title",
@@ -38,7 +37,7 @@ const addRoleQ = [
   }
 ];
 
-const addEmployeeQ = [
+const addEmployee = [
   {
     type: "input",
     name: "firstName",
@@ -62,11 +61,18 @@ const addEmployeeQ = [
     choices: [] //TODO getEmployees()
   }
 ];
-/*
+
+const updateEmployee = [
   {
-    type: ,
-    name: ,
-    message:
+    type: "list",
+    name: "employee",
+    message: "Please select an employee to update.",
+    choices: [] //TODO getEmployees()
+  },
+  {
+    type: "list",
+    name: "catagory",
+    message: "What would you like to update about the employee?",
+    choices: ["Role", "Manager"]
   }
-}
-*/
+];
