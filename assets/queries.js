@@ -1,50 +1,80 @@
 const mysql = require("mysql");
-const dotenv = require("dotenv");
+require("dotenv").config({ path: "../.env" });
 
-dotenv.config();
+function makeConnection() {
+  const connection = mysql.createConnection({
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: process.env.DB_PASSWORD,
+    database: "employeesdb"
+  });
+  connection.connect(err => {
+    if (err) throw err;
+  });
+  return connection;
+}
 
-console.log(process.env.DB_PASSWORD);
+// function getEmployees() {
+//   let connection = makeConnection();
 
-// var connection = mysql.createConnection({
-//   host: "localhost",
-
-//   // Your port; if not 3306
-//   port: 3306,
-
-//   // Your username
-//   user: "root",
-
-//   // Your password
-//   password: process.env.DB_PASSWORD,
-//   database: "employeesdb"
-// });
-
-// connection.connect(function(err) {
-//   if (err) throw err;
-//   console.log("connected as id " + connection.threadId + "\n");
-//   createProduct();
-// });
-
-// function createProduct() {
-//   console.log("Inserting a new product...\n");
-//   var query = connection.query(
-//     "INSERT INTO products SET ?",
-//     {
-//       flavor: "Rocky Road",
-//       price: 3.0,
-//       quantity: 50
-//     },
-//     function(err, res) {
+//   return new Promise((resolve, reject) => {
+//     connection.query("SELECT * FROM employee", function(err, res) {
 //       if (err) throw err;
-//       console.log(res.affectedRows + " product inserted!\n");
-//       // Call updateProduct AFTER the INSERT completes
-//       updateProduct();
-//     }
-//   );
-
-//   // logs the actual query being run
-//   console.log(query.sql);
+//       let employees = [];
+//       for (let i = 0; i < res.length; i++) {
+//         const fullName = res[i].first_name + " " + res[i].last_name;
+//         employees.push(fullName);
+//       }
+//       employees.sort((a, b) => a > b);
+//       connection.end();
+//       resolve(employees);
+//     });
+//   });
 // }
+
+function getEmployees() {
+  const query = "SELECT * FROM employee";
+  return queryDB(query);
+}
+
+function getRoles() {
+  const query = "SELECT * FROM role";
+  return queryDB(query);
+}
+
+function getDepartments() {
+  const query = "SELECT * FROM department";
+  return queryDB(query);
+}
+
+function queryDB(query) {
+  let connection = makeConnection();
+  return new Promise((resolve, reject) => {
+    connection.query(query, function(err, res) {
+      if (err) throw err;
+      connection.end();
+      resolve(res);
+    });
+  });
+}
+
+(async function init() {
+  let roles = await getRoles();
+  let employees = await getEmployees();
+  let departments = await getDepartments();
+  // console.log(roles[5].title);
+  // console.log(employees);
+  console.log(departments);
+})();
+
+module.exports = {
+  employees: getEmployees(),
+  departments: getDepartments(),
+  roles: getRoles()
+};
+
+// getEmployees();
 
 // function updateProduct() {
 //   console.log("Updating all Rocky Road quantities...\n");
