@@ -2,17 +2,25 @@ const queries = require("./queries.js");
 const inquirer = require("inquirer");
 
 async function questions() {
-  let employees = await queries.getEmployees();
+  const employeeNames = (await queries.employees)
+    .map(emp => `${emp.first_name} ${emp.last_name}`)
+    .sort((a, b) => a > b);
+  const roles = (await queries.roles)
+    .map(role => role.title)
+    .sort((a, b) => a > b);
+  const departments = (await queries.departments)
+    .map(dep => dep.name)
+    .sort((a, b) => a > b);
 
   const action = {
-    type: "list",
+    type: "rawlist",
     name: "action",
     message: "What would you like to do?",
     choices: ["View", "Add", "Update Employee Info."]
   };
 
   const viewAddCatagories = {
-    type: "list",
+    type: "rawlist",
     name: "catagory",
     message: "Please select a catagory.",
     choices: ["Department(s)", "Role(s)", "Employee(s)"]
@@ -36,10 +44,10 @@ async function questions() {
       message: "What is the salary of the role?"
     },
     {
-      type: "choice",
+      type: "rawlist",
       name: "department",
       message: "Which department is the role a part of?",
-      choices: [] //TODO getDepartments()
+      choices: departments
     }
   ];
 
@@ -55,31 +63,49 @@ async function questions() {
       message: "What is the employee's last name?"
     },
     {
-      type: "list",
+      type: "rawlist",
       name: "role",
       message: "What is the employee's role/position?",
-      choices: [] //TODO getRoles()
+      choices: roles
     },
     {
-      type: "list",
+      type: "rawlist",
       name: "manager",
       message: "Who is the employee's manager?",
-      choices: employees
+      choices: employeeNames
     }
   ];
 
   const updateEmployee = [
     {
-      type: "list",
+      type: "rawlist",
       name: "employee",
       message: "Please select an employee to update.",
-      choices: employees
+      choices: employeeNames
     },
     {
-      type: "list",
+      type: "rawlist",
       name: "catagory",
       message: "What would you like to update about the employee?",
       choices: ["Role", "Manager"]
+    },
+    {
+      type: "rawlist",
+      name: "newManager",
+      message: "Who is the employee's new manager?",
+      choices: employeeNames,
+      when: function(answers) {
+        return answers.catagory === "Manager";
+      }
+    },
+    {
+      type: "rawlist",
+      name: "newRole",
+      message: "What is the employee's new role?",
+      choices: roles,
+      when: function(answers) {
+        return answers.catagory === "Role";
+      }
     }
   ];
 
@@ -96,7 +122,8 @@ async function questions() {
 async function init() {
   try {
     let question = await questions();
-    inquirer.prompt(question.updateEmployee);
+    await inquirer.prompt(question.updateEmployee);
+    // await inquirer.prompt(question.addEmployee);
   } catch (err) {
     console.log(err);
   }
