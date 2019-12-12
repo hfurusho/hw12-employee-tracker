@@ -15,23 +15,16 @@ function makeConnection() {
   return connection;
 }
 
-// function getEmployees() {
-//   let connection = makeConnection();
-
-//   return new Promise((resolve, reject) => {
-//     connection.query("SELECT * FROM employee", function(err, res) {
-//       if (err) throw err;
-//       let employees = [];
-//       for (let i = 0; i < res.length; i++) {
-//         const fullName = res[i].first_name + " " + res[i].last_name;
-//         employees.push(fullName);
-//       }
-//       employees.sort((a, b) => a > b);
-//       connection.end();
-//       resolve(employees);
-//     });
-//   });
-// }
+function queryDB(query) {
+  let connection = makeConnection();
+  return new Promise((resolve, reject) => {
+    connection.query(query, function(err, res) {
+      if (err) throw err;
+      connection.end();
+      resolve(res);
+    });
+  });
+}
 
 function getEmployees() {
   const query = "SELECT * FROM employee";
@@ -48,33 +41,11 @@ function getDepartments() {
   return queryDB(query);
 }
 
-function queryDB(query) {
-  let connection = makeConnection();
-  return new Promise((resolve, reject) => {
-    connection.query(query, function(err, res) {
-      if (err) throw err;
-      connection.end();
-      resolve(res);
-    });
-  });
-}
-
-(async function init() {
-  let roles = await getRoles();
-  let employees = await getEmployees();
-  let departments = await getDepartments();
-  // console.log(roles[5].title);
-  // console.log(employees);
-  console.log(departments);
-})();
-
 module.exports = {
   employees: getEmployees(),
   departments: getDepartments(),
   roles: getRoles()
 };
-
-// getEmployees();
 
 // function updateProduct() {
 //   console.log("Updating all Rocky Road quantities...\n");
