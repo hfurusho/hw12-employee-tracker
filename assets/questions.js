@@ -1,7 +1,8 @@
 const queries = require("./queries.js");
 const inquirer = require("inquirer");
 
-async function questions() {
+// module.exports.questions =
+async function getQuestions() {
   const employeeNames = (await queries.employees)
     .map(emp => `${emp.first_name} ${emp.last_name}`)
     .sort((a, b) => a > b);
@@ -12,19 +13,23 @@ async function questions() {
     .map(dep => dep.name)
     .sort((a, b) => a > b);
 
-  const action = {
-    type: "rawlist",
-    name: "action",
-    message: "What would you like to do?",
-    choices: ["View", "Add", "Update Employee Info."]
-  };
-
-  const viewAddCatagories = {
-    type: "rawlist",
-    name: "catagory",
-    message: "Please select a catagory.",
-    choices: ["Department(s)", "Role(s)", "Employee(s)"]
-  };
+  const action = [
+    {
+      type: "rawlist",
+      name: "action",
+      message: "What would you like to do?",
+      choices: ["View", "Add", "Update Employee Info."]
+    },
+    {
+      type: "rawlist",
+      name: "catagory",
+      message: "Please select a catagory.",
+      choices: ["Department(s)", "Role(s)", "Employee(s)"],
+      when: function(answers) {
+        return answers.action !== "Update Employee Info.";
+      }
+    }
+  ];
 
   const addDep = {
     type: "input",
@@ -79,7 +84,7 @@ async function questions() {
   const updateEmployee = [
     {
       type: "rawlist",
-      name: "employee",
+      name: "name",
       message: "Please select an employee to update.",
       choices: employeeNames
     },
@@ -111,7 +116,6 @@ async function questions() {
 
   return {
     action: action,
-    viewAddCatagories: viewAddCatagories,
     addDep: addDep,
     addRole: addRole,
     addEmployee: addEmployee,
@@ -119,14 +123,17 @@ async function questions() {
   };
 }
 
-async function init() {
-  try {
-    let question = await questions();
-    await inquirer.prompt(question.updateEmployee);
-    // await inquirer.prompt(question.addEmployee);
-  } catch (err) {
-    console.log(err);
-  }
-}
+module.exports = { getQuestions };
 
-init();
+// FOR TESTING
+// async function init() {
+//   try {
+//     let question = await questions();
+//     await inquirer.prompt(question.updateEmployee);
+//     // await inquirer.prompt(question.addEmployee);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
+
+// init();
