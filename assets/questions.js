@@ -5,23 +5,27 @@ const inquirer = require("inquirer");
 async function getQuestions() {
   const employeeNames = (await queries.employees)
     .map(emp => `${emp.first_name} ${emp.last_name}`)
-    .sort((a, b) => a > b);
+    .sort((a, b) => a > b)
+    .concat(new inquirer.Separator());
   const roles = (await queries.roles)
     .map(role => role.title)
-    .sort((a, b) => a > b);
+    .sort((a, b) => a > b)
+    .concat(new inquirer.Separator());
+
   const departments = (await queries.departments)
     .map(dep => dep.name)
-    .sort((a, b) => a > b);
+    .sort((a, b) => a > b)
+    .concat(new inquirer.Separator());
 
   const action = [
     {
-      type: "rawlist",
+      type: "list",
       name: "action",
       message: "What would you like to do?",
       choices: ["View", "Add", "Update Employee Info."]
     },
     {
-      type: "rawlist",
+      type: "list",
       name: "catagory",
       message: "Please select a catagory.",
       choices: ["Department(s)", "Role(s)", "Employee(s)"],
@@ -49,7 +53,7 @@ async function getQuestions() {
       message: "What is the salary of the role?"
     },
     {
-      type: "rawlist",
+      type: "list",
       name: "department",
       message: "Which department is the role a part of?",
       choices: departments
@@ -68,34 +72,41 @@ async function getQuestions() {
       message: "What is the employee's last name?"
     },
     {
-      type: "rawlist",
+      type: "list",
       name: "role",
       message: "What is the employee's role/position?",
       choices: roles
     },
     {
-      type: "rawlist",
+      type: "list",
       name: "manager",
       message: "Who is the employee's manager?",
-      choices: employeeNames
+      choices: ["None"].concat(employeeNames),
+      filter: function(answer) {
+        if (answer === "None") {
+          return null;
+        } else {
+          return answer;
+        }
+      }
     }
   ];
 
   const updateEmployee = [
     {
-      type: "rawlist",
+      type: "list",
       name: "name",
       message: "Please select an employee to update.",
       choices: employeeNames
     },
     {
-      type: "rawlist",
+      type: "list",
       name: "catagory",
       message: "What would you like to update about the employee?",
       choices: ["Role", "Manager"]
     },
     {
-      type: "rawlist",
+      type: "list",
       name: "newManager",
       message: "Who is the employee's new manager?",
       choices: employeeNames,
@@ -104,7 +115,7 @@ async function getQuestions() {
       }
     },
     {
-      type: "rawlist",
+      type: "list",
       name: "newRole",
       message: "What is the employee's new role?",
       choices: roles,
