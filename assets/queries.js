@@ -26,6 +26,35 @@ function queryDB(query) {
   });
 }
 
+function updateDB(query) {
+  let connection = makeConnection();
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    connection.end();
+    console.log("DB Updated.");
+  });
+}
+
+async function updateEmployee(name, catagory, newVal) {
+  const nameArr = name.split(" ");
+  const empId = await getEmployeeId(nameArr[0], nameArr[1]);
+  let newValId;
+  if (catagory === "Role") {
+    newValId = await getRoleId(newVal);
+    catagory = "role_id";
+  } else {
+    newValId = await getDepartmentId(newVal);
+    catagory = "department_id";
+  }
+
+  const query = `
+  UPDATE employee
+  SET ${catagory}="${newValId}"
+  WHERE id="${empId}"
+  `;
+  updateDB(query);
+}
+
 function getEmployees() {
   const query = "SELECT * FROM employee";
   return queryDB(query);
@@ -41,10 +70,46 @@ function getDepartments() {
   return queryDB(query);
 }
 
+async function getEmployeeId(firstName, lastName) {
+  const employees = await getEmployees();
+  for (let i = 0; i < employees.length; i++) {
+    if (
+      employees[i].first_name === firstName &&
+      employees[i].last_name === lastName
+    ) {
+      return employees[i].id;
+    }
+  }
+}
+
+async function getRoleId(role) {
+  const roles = await getRoles();
+  for (let i = 0; i < roles.length; i++) {
+    if (roles[i].title === role) {
+      return roles[i].id;
+    }
+  }
+}
+
+async function getDepartmentId(dep) {
+  const departments = await getDepartments();
+  for (let i = 0; i < departments.length; i++) {
+    if (departments[i].name === dep) {
+      return departments[i].id;
+    }
+  }
+}
+
+// FOR TESTING
+// (async function init() {
+//   console.log(await getDepartmentId("Finance"));
+// })();
+
 module.exports = {
   employees: getEmployees(),
   departments: getDepartments(),
-  roles: getRoles()
+  roles: getRoles(),
+  updateEmployee: updateEmployee
 };
 
 // function updateProduct() {
