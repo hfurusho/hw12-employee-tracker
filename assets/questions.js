@@ -1,6 +1,7 @@
 const queries = require("./queries.js");
 const inquirer = require("inquirer");
 
+// Builds and returns the questions to be used in inquirer.
 async function getQuestions() {
   const employeeNames = (await queries.employees())
     .map(emp => `${emp.first_name} ${emp.last_name}`)
@@ -134,6 +135,7 @@ async function getQuestions() {
   };
 }
 
+// Sort helper function to sort alphabetically.
 function sortAlpha(str1, str2) {
   str1 = str1.toUpperCase();
   str2 = str2.toUpperCase();
