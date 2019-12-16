@@ -37,12 +37,12 @@ async function viewData(answer) {
       );
       break;
     case "Role(s)":
-      data = (await queries.roles()).sort((a, b) =>
+      data = (await queries.rolesTable()).sort((a, b) =>
         sortAlpha(a.title, b.title)
       );
       break;
     case "Employee(s)":
-      data = (await queries.employees()).sort((a, b) =>
+      data = (await queries.employeesTable()).sort((a, b) =>
         sortAlpha(a.first_name, b.first_name)
       );
       break;
