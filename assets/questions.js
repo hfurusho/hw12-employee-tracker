@@ -1,7 +1,6 @@
 const queries = require("./queries.js");
 const inquirer = require("inquirer");
 
-// module.exports.questions =
 async function getQuestions() {
   const employeeNames = (await queries.employees())
     .map(emp => `${emp.first_name} ${emp.last_name}`)
@@ -148,16 +147,3 @@ function sortAlpha(str1, str2) {
 }
 
 module.exports = { getQuestions };
-
-// FOR TESTING
-// async function init() {
-//   try {
-//     let question = await questions();
-//     await inquirer.prompt(question.updateEmployee);
-//     // await inquirer.prompt(question.addEmployee);
-//   } catch (err) {
-//     console.log(err);
-//   }
-// }
-
-// init();
