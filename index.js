@@ -5,6 +5,7 @@ const Questions = require("./assets/questions");
 
 init();
 
+// Begin CLI application
 async function init() {
   try {
     let questions = await Questions.getQuestions();
@@ -18,7 +19,7 @@ async function init() {
         employee.newManager || employee.newRole
       );
     } else if (answer.action === "View") {
-      await viewData(answer);
+      await viewData(answer.catagory);
     } else {
       await addNew(answer.catagory, questions);
     }
@@ -28,9 +29,10 @@ async function init() {
   }
 }
 
-async function viewData(answer) {
+// Console.tables the db data based on the requested viewed catagory
+async function viewData(catagory) {
   let data;
-  switch (answer.catagory) {
+  switch (catagory) {
     case "Department(s)":
       data = (await queries.departments()).sort((a, b) =>
         sortAlpha(a.name, b.name)
@@ -48,9 +50,9 @@ async function viewData(answer) {
       break;
   }
   console.table(data);
-  return;
 }
 
+// Function to add new entries to the employeesdb based off the catagory
 async function addNew(catagory, questions) {
   let data;
   switch (catagory) {
@@ -74,6 +76,7 @@ async function addNew(catagory, questions) {
   }
 }
 
+// Helper function to sort arrays alphabetically.
 function sortAlpha(str1, str2) {
   str1 = str1.toUpperCase();
   str2 = str2.toUpperCase();
