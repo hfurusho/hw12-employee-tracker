@@ -92,8 +92,9 @@ async function updateEmployee(name, catagory, newVal) {
     newValId = await getRoleId(newVal);
     catagory = "role_id";
   } else {
-    newValId = await getDepartmentId(newVal);
-    catagory = "department_id";
+    const managerNameArr = newVal.split(" ");
+    newValId = await getEmployeeId(managerNameArr[0], managerNameArr[1]);
+    catagory = "manager_id";
   }
 
   const query = `
