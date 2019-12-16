@@ -34,6 +34,21 @@ function updateDB(query) {
   });
 }
 
+async function addDepartment(name) {
+  const query = `
+  INSERT INTO department (name)
+  VALUES ("${name}")`;
+  updateDB(query);
+}
+
+async function addRole(title, salary, department) {
+  const depId = await getDepartmentId(department);
+  const query = `
+  INSERT INTO role (title, salary, department_id)
+  VALUES ("${title}", ${salary}, ${depId})`;
+  updateDB(query);
+}
+
 async function addEmployee(firstName, lastName, role, manager) {
   const roleId = await getRoleId(role);
   let managerId;
@@ -133,7 +148,9 @@ module.exports = {
   departments: getDepartments,
   roles: getRoles,
   updateEmployee: updateEmployee,
-  addEmployee: addEmployee
+  addEmployee: addEmployee,
+  addDepartment: addDepartment,
+  addRole: addRole
 };
 
 // function updateProduct() {

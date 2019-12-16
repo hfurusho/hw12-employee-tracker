@@ -5,15 +5,16 @@ const inquirer = require("inquirer");
 async function getQuestions() {
   const employeeNames = (await queries.employees())
     .map(emp => `${emp.first_name} ${emp.last_name}`)
-    .sort((a, b) => a > b)
+    .sort((a, b) => sortAlpha(a, b))
     .concat(new inquirer.Separator());
+
   const roles = (await queries.roles())
     .map(role => role.title)
-    .sort((a, b) => a > b)
+    .sort((a, b) => sortAlpha(a, b))
     .concat(new inquirer.Separator());
   const departments = (await queries.departments())
     .map(dep => dep.name)
-    .sort((a, b) => a > b)
+    .sort((a, b) => sortAlpha(a, b))
     .concat(new inquirer.Separator());
 
   const action = [
@@ -132,6 +133,18 @@ async function getQuestions() {
     updateEmployee: updateEmployee,
     employeeNames: employeeNames
   };
+}
+
+function sortAlpha(str1, str2) {
+  str1 = str1.toUpperCase();
+  str2 = str2.toUpperCase();
+  if (str1 > str2) {
+    return 1;
+  } else if (str1 < str2) {
+    return -1;
+  } else {
+    return 0;
+  }
 }
 
 module.exports = { getQuestions };
