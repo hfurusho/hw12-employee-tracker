@@ -1,6 +1,11 @@
 const mysql = require("mysql");
 require("dotenv").config({ path: "./.env" });
 
+/******************************************/
+/*     Connection and Query Functions     */
+/******************************************/
+
+// Creates and returns connection to employeesdb.
 function makeConnection() {
   const connection = mysql.createConnection({
     host: "localhost",
@@ -15,6 +20,7 @@ function makeConnection() {
   return connection;
 }
 
+// Queries the DB and returns the results from the database.
 function queryDB(query) {
   let connection = makeConnection();
   return new Promise((resolve, reject) => {
@@ -26,6 +32,7 @@ function queryDB(query) {
   });
 }
 
+// Updates the DB and does not return anything.
 function updateDB(query) {
   let connection = makeConnection();
   connection.query(query, function(err, res) {
@@ -34,6 +41,11 @@ function updateDB(query) {
   });
 }
 
+/******************************************/
+/*         Adding To DB Functions         */
+/******************************************/
+
+// Adds a department to the DB.
 async function addDepartment(name) {
   const query = `
   INSERT INTO department (name)
@@ -41,6 +53,7 @@ async function addDepartment(name) {
   updateDB(query);
 }
 
+// Adds a role to the DB.
 async function addRole(title, salary, department) {
   const depId = await getDepartmentId(department);
   const query = `
@@ -49,6 +62,7 @@ async function addRole(title, salary, department) {
   updateDB(query);
 }
 
+// Adds an employee to the DB.
 async function addEmployee(firstName, lastName, role, manager) {
   const roleId = await getRoleId(role);
   let managerId;
@@ -64,6 +78,11 @@ async function addEmployee(firstName, lastName, role, manager) {
   updateDB(query);
 }
 
+/******************************************/
+/*        Update DB Entry Functions       */
+/******************************************/
+
+// Updates an employee's role or manager
 async function updateEmployee(name, catagory, newVal) {
   const nameArr = name.split(" ");
   const empId = await getEmployeeId(nameArr[0], nameArr[1]);
@@ -84,21 +103,29 @@ async function updateEmployee(name, catagory, newVal) {
   updateDB(query);
 }
 
+/******************************************/
+/*        Read DB Table Functions         */
+/******************************************/
+
+// Reads and returns the employee table.
 function getEmployees() {
   const query = "SELECT * FROM employee";
   return queryDB(query);
 }
 
+// Reads and returns the role table.
 function getRoles() {
   const query = "SELECT * FROM role";
   return queryDB(query);
 }
 
+// Reads and returns the department table.
 function getDepartments() {
   const query = "SELECT * FROM department";
   return queryDB(query);
 }
 
+// Reads and returns the full employees table where foreign keys display names/titles instead.
 function getFullEmployeesTable() {
   const query = `
     SELECT e.id, e.first_name, e.last_name, r.title AS role, 
@@ -111,6 +138,7 @@ function getFullEmployeesTable() {
   return queryDB(query);
 }
 
+// Reads and returns the full roles table where department_id shows the department name instead.
 function getFullRolesTable() {
   const query = `
     SELECT r.id, r.title, r.salary, d.name AS department 
@@ -119,6 +147,7 @@ function getFullRolesTable() {
   return queryDB(query);
 }
 
+// Queries the DB and returns the employee's ID based off first and last name.
 async function getEmployeeId(firstName, lastName) {
   const employees = await getEmployees();
   for (let i = 0; i < employees.length; i++) {
@@ -131,6 +160,7 @@ async function getEmployeeId(firstName, lastName) {
   }
 }
 
+// Queries the DB and returns the role's ID based off role title.
 async function getRoleId(role) {
   const roles = await getRoles();
   for (let i = 0; i < roles.length; i++) {
@@ -140,6 +170,7 @@ async function getRoleId(role) {
   }
 }
 
+// Queries the DB and returns the department's ID based off department name.
 async function getDepartmentId(dep) {
   const departments = await getDepartments();
   for (let i = 0; i < departments.length; i++) {
@@ -149,6 +180,7 @@ async function getDepartmentId(dep) {
   }
 }
 
+// Queries the DB and returns the department's ID based off the role title.
 async function getDepartmentIdByRole(role) {
   const roles = await getRoles();
   for (let i = 0; i < roles.length; i++) {
