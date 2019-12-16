@@ -68,6 +68,7 @@ async function updateEmployee(name, catagory, newVal) {
   const nameArr = name.split(" ");
   const empId = await getEmployeeId(nameArr[0], nameArr[1]);
   let newValId;
+
   if (catagory === "Role") {
     newValId = await getRoleId(newVal);
     catagory = "role_id";
@@ -77,10 +78,9 @@ async function updateEmployee(name, catagory, newVal) {
   }
 
   const query = `
-  UPDATE employee
-  SET ${catagory}="${newValId}"
-  WHERE id="${empId}"
-  `;
+    UPDATE employee
+    SET ${catagory}="${newValId}"
+    WHERE id="${empId}"`;
   updateDB(query);
 }
 
@@ -96,6 +96,26 @@ function getRoles() {
 
 function getDepartments() {
   const query = "SELECT * FROM department";
+  return queryDB(query);
+}
+
+function getFullEmployeesTable() {
+  const query = `
+    SELECT e.id, e.first_name, e.last_name, r.title AS role, 
+    CONCAT(m.first_name, " ", m.last_name) AS manager 
+    FROM employee AS e
+    JOIN role AS r
+    ON e.role_id = r.id
+    JOIN employee AS m
+    ON e.manager_id = m.id`;
+  return queryDB(query);
+}
+
+function getFullRolesTable() {
+  const query = `
+    SELECT r.id, r.title, r.salary, d.name AS department 
+    FROM role AS r
+    JOIN department AS d ON r.department_id = d.id;`;
   return queryDB(query);
 }
 
@@ -138,11 +158,6 @@ async function getDepartmentIdByRole(role) {
   }
 }
 
-// FOR TESTING
-// (async function init() {
-//   console.log(await getDepartmentId("Finance"));
-// })();
-
 module.exports = {
   employees: getEmployees,
   departments: getDepartments,
@@ -150,55 +165,7 @@ module.exports = {
   updateEmployee: updateEmployee,
   addEmployee: addEmployee,
   addDepartment: addDepartment,
-  addRole: addRole
+  addRole: addRole,
+  employeesTable: getFullEmployeesTable,
+  rolesTable: getFullRolesTable
 };
-
-// function updateProduct() {
-//   console.log("Updating all Rocky Road quantities...\n");
-//   var query = connection.query(
-//     "UPDATE products SET ? WHERE ?",
-//     [
-//       {
-//         quantity: 100
-//       },
-//       {
-//         flavor: "Rocky Road"
-//       }
-//     ],
-//     function(err, res) {
-//       if (err) throw err;
-//       console.log(res.affectedRows + " products updated!\n");
-//       // Call deleteProduct AFTER the UPDATE completes
-//       deleteProduct();
-//     }
-//   );
-
-//   // logs the actual query being run
-//   console.log(query.sql);
-// }
-
-// function deleteProduct() {
-//   console.log("Deleting all strawberry icecream...\n");
-//   connection.query(
-//     "DELETE FROM products WHERE ?",
-//     {
-//       flavor: "strawberry"
-//     },
-//     function(err, res) {
-//       if (err) throw err;
-//       console.log(res.affectedRows + " products deleted!\n");
-//       // Call readProducts AFTER the DELETE completes
-//       readProducts();
-//     }
-//   );
-// }
-
-// function readProducts() {
-//   console.log("Selecting all products...\n");
-//   connection.query("SELECT * FROM products", function(err, res) {
-//     if (err) throw err;
-//     // Log all results of the SELECT statement
-//     console.log(res);
-//     connection.end();
-//   });
-// }
