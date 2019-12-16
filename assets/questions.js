@@ -3,16 +3,15 @@ const inquirer = require("inquirer");
 
 // module.exports.questions =
 async function getQuestions() {
-  const employeeNames = (await queries.employees)
+  const employeeNames = (await queries.employees())
     .map(emp => `${emp.first_name} ${emp.last_name}`)
     .sort((a, b) => a > b)
     .concat(new inquirer.Separator());
-  const roles = (await queries.roles)
+  const roles = (await queries.roles())
     .map(role => role.title)
     .sort((a, b) => a > b)
     .concat(new inquirer.Separator());
-
-  const departments = (await queries.departments)
+  const departments = (await queries.departments())
     .map(dep => dep.name)
     .sort((a, b) => a > b)
     .concat(new inquirer.Separator());
@@ -130,7 +129,8 @@ async function getQuestions() {
     addDep: addDep,
     addRole: addRole,
     addEmployee: addEmployee,
-    updateEmployee: updateEmployee
+    updateEmployee: updateEmployee,
+    employeeNames: employeeNames
   };
 }
 

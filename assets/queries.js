@@ -31,8 +31,22 @@ function updateDB(query) {
   connection.query(query, function(err, res) {
     if (err) throw err;
     connection.end();
-    console.log("DB Updated.");
   });
+}
+
+async function addEmployee(firstName, lastName, role, manager) {
+  const roleId = await getRoleId(role);
+  let managerId;
+  if (manager) {
+    const managerNameArr = manager.split(" ");
+    managerId = await getEmployeeId(managerNameArr[0], managerNameArr[1]);
+  } else {
+    managerId = null;
+  }
+  const query = `
+  INSERT INTO employee (first_name, last_name, role_id, manager_id)
+  VALUES ("${firstName}", "${lastName}", ${roleId}, ${managerId})`;
+  updateDB(query);
 }
 
 async function updateEmployee(name, catagory, newVal) {
@@ -100,16 +114,26 @@ async function getDepartmentId(dep) {
   }
 }
 
+async function getDepartmentIdByRole(role) {
+  const roles = await getRoles();
+  for (let i = 0; i < roles.length; i++) {
+    if (roles[i].title === role) {
+      return roles[i].department_id;
+    }
+  }
+}
+
 // FOR TESTING
 // (async function init() {
 //   console.log(await getDepartmentId("Finance"));
 // })();
 
 module.exports = {
-  employees: getEmployees(),
-  departments: getDepartments(),
-  roles: getRoles(),
-  updateEmployee: updateEmployee
+  employees: getEmployees,
+  departments: getDepartments,
+  roles: getRoles,
+  updateEmployee: updateEmployee,
+  addEmployee: addEmployee
 };
 
 // function updateProduct() {
