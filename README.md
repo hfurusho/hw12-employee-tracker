@@ -16,4 +16,4 @@ Have a business and need to keep track of your employees and business structure?
   
   ### Update Employee
   
-  ![gif of updating employee](https://stormy-escarpment-48830.herokuapp.com/)
+  ![gif of updating employee](https://github.com/hfurusho/hw12-employee-tracker/blob/master/demos/Update%20Employee%20Demo.gif)
